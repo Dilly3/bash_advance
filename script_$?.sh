@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+ 
 set -e 
 set -o pipefail
 
@@ -10,7 +11,7 @@ local -r code="${2:-130}"
 echo "Error: $msg" >&2
 exit ${code}
 }
-
+# fully qualified domain name 
 readonly FILE_CONV="./fqdn.ppt"
 user=$(whoami)
 readonly servers="server1,server2,server3"

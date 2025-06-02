@@ -13,11 +13,16 @@ echo "Error: ${msg}"
 exit ${code}
 }
 
-[[ $# -gt 0 ]] || (terminate "enter steps" 127 ) 
+instructions() {
+echo "=============== CALORIE CALCULATOR =============="
+read -p  "ENTER NUMBER OF STEPS: " steps
+}
+
+instructions
+if [ -z "${steps}" ]; then (terminate "enter steps" 127 ) fi 
 
 readonly CALORIES_PER_STEP=0.04
-calories=${1}
 
-burnt=$(echo "$calories * $CALORIES_PER_STEP" | bc )
- echo "Calories Burned: ${burnt}"
+burnt=$(echo "$steps * $CALORIES_PER_STEP" | bc )
+ echo "Calories Burnt: ${burnt}"
 exit 0
