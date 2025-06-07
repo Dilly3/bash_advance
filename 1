@@ -1,0 +1,66 @@
+#
+
+#!/usr/bin/env bash
+
+set -e 
+set -o pipefail 
+set -u
+
+work_dir=$(dirname "$(readlink -f "${0}")")
+food_options_file="food_options.txt"
+# initialize array
+declare -a lunch_options=()
+
+terminate() {
+msg="Error: $1"
+code="${2:-130}"
+printf '%s\n' "${msg}" >&2
+exit ${code}
+}
+
+
+loadFoodOptions() {
+# function load food options:
+# - get input from user
+# - checks if food_options_file exist and create it 
+# - add the input(list of food) to food_options_file
+if [[ ! -s $food_options_file ]];
+then 
+count=1
+printf '%s\n' "Enter Food Options. To exit enter end"
+while true; do
+read -p "Food number ${count}:" food
+if [[ $( echo "${food}" | tr 'a-z' 'A-Z' ) == "END" ]]; then
+break
+fi
+# check if food start with atleast 3 alphabeth 
+if [[ ! "${food}" =~ ^[a-zA-Z]{3,} ]]; then
+ (
+terminate "food must start with atleast 3 aphabeth" "127"
+)
+fi
+
+lunch_options[${#lunch_options[@]}]="${food}"
+(( count++ ))
+done
+
+[[  -f "${work_dir}/food_options" ]] || ( 
+	cd $work_dir; 
+	touch "food_options.txt"
+	 ) 
+printf '%s\n' "${lunch_options[@]}" > "${work_dir}/food_options.txt"
+lunch_options=()
+else
+:
+fi
+}
+
+getRandom() {
+mapfile -t lunch_options < "${work_dir}/${food_options_file}"
+printf 'Your Food Choice Today is: %s\n' "${lunch_options["$(( RANDOM % ${#lunch_options[@]} ))"]}"
+}
+
+loadFoodOptions 
+getRandom
+
+exit 0
